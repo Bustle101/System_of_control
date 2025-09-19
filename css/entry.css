@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background: url("/images/Frame\ 1\ \(5\).png") repeat; /* фон */
+  background: url("/images/Frame\ 1\ \(5\).png") repeat; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,7 +15,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0,0,0,0.1);
   text-align: center;
-  width: 420px; /* фиксированная ширина для аккуратности */
+  width: 420px; 
 }
 
 .login-container h1 {
@@ -77,4 +77,14 @@ body {
 
 .links a:hover {
   text-decoration: underline;
+}
+
+.back-button {
+   display: block;         
+  text-align: left;       
+  margin-bottom: 10px;     
+  font-size: 20px;         
+  color: #006666;
+  text-decoration: none;
+
 }
