@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import Entrance from "./pages/Entrance";
+import Registration from "./pages/Registration";
+import LostPassword from "./pages/LostPassword";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-   <div>
-    <h1>hiii</h1>
-   </div>
-  )
+    <>
+      <Routes>
+        <Route path="/" element={<Entrance />} />
+        <Route path="/registration" element={<Registration />} />
+        <Route path="/lost-password" element={<LostPassword />} />
+      </Routes>
+    </>
+  );
 }
-
-export default App
