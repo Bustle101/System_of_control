@@ -16,8 +16,14 @@ export default function Registration(){
             <form>
             <input type="text" placeholder="Логин"/>
             <input type="text" placeholder="Почта"/>
+
             <input type="password" placeholder="Пароль"/>
             <input type="password" placeholder="Повторите пароль"/>
+            <select className="roles">
+                <option >Менеджер</option>
+                <option >Инженер</option>
+                <option >Наблюдатель</option>
+            </select>
             <button type="submit">Далее</button>
             </form>
 

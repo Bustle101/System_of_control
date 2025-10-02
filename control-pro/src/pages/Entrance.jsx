@@ -12,7 +12,9 @@ export default function Entrance() {
       <form>
         <input type="text" placeholder="Логин" />
         <input type="password" placeholder="Пароль" />
-        <button type="submit">Далее</button>
+        
+        <Link className="next" to="/home">Далее</Link>
+        
       </form>
 
       <div className="links">
