@@ -1,36 +1,21 @@
-import logo from '/vite.svg'
-import { useEffect, useState } from 'react'
-import classes from './Header.module.css'
-import {styled} from 'styled-components'
+import './Header.css'
+import { Link } from "react-router-dom";
 
-
-const HeaderContainer = styled.header`
- 
-  color: blue;
-`
 
 export default function Header(){
-  const [now, setNow] = useState(new Date())
-  
-  useEffect(()=>{
-    const interval = setInterval(() => setNow(new Date()), 1000)
+    return(
+        <header>
+            <div className="logo">
+                <Link to="/home">СистемаКонтроля</Link>
+            </div>
 
-    return () => {
-      clearInterval(interval)
-    }
-  },[])
-
-  
-
-  const name = 'Res'
-
-  return(
-    <HeaderContainer>
-      <img src={logo} alt={name}/>
-
-      <h2>OMG</h2>
-
-      <span>Time now: { now.toLocaleTimeString() }</span>
-    </HeaderContainer>
-  )
+            <nav>
+                <Link to="/projects">Проекты</Link>
+                <Link to="/defects">Дефекты</Link>
+                <Link to="/reports">Отчеты</Link>
+                <Link to="/contacts">Контакты</Link>
+            </nav>
+            <div className="profile"></div>
+        </header>
+    )
 }
