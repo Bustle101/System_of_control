@@ -1,6 +1,8 @@
 import ElProjects from "../components/ElProjects/ElProjects"
 import SearchBar from "../components/SearchBar/SearchBar"
 import Header from "../components/Header/Header"
+import '../css/main.css'
+
 export default function Projects() {
   return (
     <div className="basa">
@@ -11,7 +13,7 @@ export default function Projects() {
                 <h1 className="hpage">
                     Проекты
                 </h1>
-                <SearchBar></SearchBar>
+                <SearchBar className="searchbar"></SearchBar>
             </div>
             <div className="projects-grid">
                 <ElProjects

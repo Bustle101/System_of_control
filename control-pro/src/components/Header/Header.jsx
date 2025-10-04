@@ -13,9 +13,10 @@ export default function Header(){
                 <Link to="/projects">Проекты</Link>
                 <Link to="/defects">Дефекты</Link>
                 <Link to="/reports">Отчеты</Link>
-                <Link to="/contacts">Контакты</Link>
+      
             </nav>
-            <div className="profile"></div>
+            <Link  className="profile" to="/profile"></Link>
+       
         </header>
     )
 }
