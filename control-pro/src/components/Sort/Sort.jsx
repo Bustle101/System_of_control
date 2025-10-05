@@ -4,7 +4,7 @@ export default function Sort() {
     <div className="sort">
         <select className="sort-types">
             <option >По алфавиту</option>
-            <option >По статусу</option>
+            <option >По этапу</option>
         </select>   
         <button ></button>
     </div>

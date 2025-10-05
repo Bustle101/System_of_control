@@ -7,6 +7,8 @@ import Projects from "./pages/Projects";
 import Defects from "./pages/Defects";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
+import ProjectDetail from "./pages/ProjectDetail";
+import Defectsdetail from "./pages/DefectsDetail";
 
 
 export default function App() {
@@ -21,6 +23,9 @@ export default function App() {
         <Route path="/defects" element={<Defects />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/defects/:id" element={<Defectsdetail />} />
+
       </Routes>
     </>
   );

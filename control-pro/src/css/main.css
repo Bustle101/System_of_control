@@ -63,7 +63,7 @@ main p.subtitle {
 .hpage{
   text-align: left;
   padding-left: 50px;
-  padding-right: 15%;
+  padding-right: 5%;
 }
 
 .projects-header {
@@ -79,8 +79,5 @@ main p.subtitle {
   margin: 0;
 }
 
-.search-bar{
-  margin-left: 10%;
 
-}
 

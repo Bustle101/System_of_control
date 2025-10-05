@@ -5,8 +5,14 @@ import SearchBar from "../components/SearchBar/SearchBar";
 import Header from "../components/Header/Header";
 import '../css/main.css'
 
+
+
+
 export default function Reports() {
   const [activeTab, setActiveTab] = useState("reports");
+
+
+
 
   return (
     <div className="basa">
@@ -14,7 +20,7 @@ export default function Reports() {
       {/* Переключатель */}
       <main>
         <div className="projects-header">
-            <button
+            <button style={{marginLeft: '100px'}}
             className={activeTab === "reports" ? "tab active" : "tab"}
             onClick={() => setActiveTab("reports")}
             >
