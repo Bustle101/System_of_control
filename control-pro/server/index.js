@@ -2,6 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import projectRoutes from "./routes/projects.js";
+import defectRoutes from "./routes/defects.js";
+import reportRoutes from "./routes/reports.js";
+import userRoutes from "./routes/users.js";
+import chartRoutes from "./routes/charts.js";
 
 dotenv.config({ path: "./server/.env" });
 
@@ -13,6 +17,10 @@ app.use(express.json());
 
 // Подключаем маршруты
 app.use("/api/projects", projectRoutes);
+app.use("/api/defects", defectRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/charts", chartRoutes);
 
 // Проверочный маршрут
 app.get("/", (req, res) => {
