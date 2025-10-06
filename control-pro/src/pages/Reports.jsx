@@ -3,14 +3,13 @@ import ReportsList from "../components/ReportList/ReportList";
 import ChartsView from "../components/ChartsView/ChartsView";
 import SearchBar from "../components/SearchBar/SearchBar";
 import Header from "../components/Header/Header";
-import '../css/main.css'
 
+import '../css/main.css'
 
 
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState("reports");
-
 
 
 

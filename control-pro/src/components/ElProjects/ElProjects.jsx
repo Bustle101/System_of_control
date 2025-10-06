@@ -1,18 +1,15 @@
 import './El.css'
 import { Link } from "react-router-dom";
 
-export default function ElProjects({ title, image, status, nameproj, pathto }) {
+export default function ElProjects({ id, name, status, image, pathto }) {
   return (
     <div className="project-card">
-      <h3>{title}</h3>
-      <h4>{nameproj}</h4>
-      <img src={image} alt={title} />
-      <p >{status}</p>
-
-      <Link to={`/${pathto}/${project.id}`}>
+      <h3>{name}</h3>
+      <img src={image} alt={name} width="200" />
+      <p>Этап: {status}</p>
+      <Link to={`/${pathto}/${id}`}>
         <button className="details-btn">Подробнее</button>
       </Link>
-
     </div>
   );
 }

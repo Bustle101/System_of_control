@@ -9,7 +9,7 @@ import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
 import ProjectDetail from "./pages/ProjectDetail";
 import Defectsdetail from "./pages/DefectsDetail";
-
+import ReportDetail from "./pages/ReportDetail";
 
 export default function App() {
   return (
@@ -25,6 +25,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/defects/:id" element={<Defectsdetail />} />
+        <Route path="/reports/:id" element={<ReportDetail />} />
 
       </Routes>
     </>
