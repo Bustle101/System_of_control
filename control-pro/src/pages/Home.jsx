@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+
 import '../css/main.css'
 import stroyka from "/images/stroyka.jpg";
 import Header from "../components/Header/Header";
