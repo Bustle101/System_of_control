@@ -6,6 +6,7 @@ import defectRoutes from "./routes/defects.js";
 import reportRoutes from "./routes/reports.js";
 import userRoutes from "./routes/users.js";
 import chartRoutes from "./routes/charts.js";
+import passwordRoutes from "./routes/password.js";
 
 dotenv.config({ path: "./server/.env" });
 
@@ -21,7 +22,7 @@ app.use("/api/defects", defectRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/charts", chartRoutes);
-
+app.use("/api/password", passwordRoutes);
 // Проверочный маршрут
 app.get("/", (req, res) => {
   res.send(" Сервер работает");
