@@ -1,6 +1,8 @@
 import "../css/entry.css";
 import { Link } from "react-router-dom";
 
+
+
 export default function Entrance() {
   return (
     <div className="login-container">
