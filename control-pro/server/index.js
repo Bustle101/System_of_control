@@ -7,6 +7,7 @@ import reportRoutes from "./routes/reports.js";
 import userRoutes from "./routes/users.js";
 import chartRoutes from "./routes/charts.js";
 import passwordRoutes from "./routes/password.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config({ path: "./server/.env" });
 
@@ -23,6 +24,8 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/charts", chartRoutes);
 app.use("/api/password", passwordRoutes);
+app.use("/api/auth", authRoutes);
+
 // Проверочный маршрут
 app.get("/", (req, res) => {
   res.send(" Сервер работает");

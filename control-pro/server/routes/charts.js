@@ -11,6 +11,7 @@ const router = express.Router();
 // Кол-во проектов
 router.get("/projects", getProjectStats);
 
+
 // Кол-во дефектов по статусу
 router.get("/defects/status", getDefectStatusStats);
 
