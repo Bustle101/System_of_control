@@ -9,6 +9,7 @@ export default function ReportsList() {
 
   return (
     <div className="reports-list">
+      <button className="adminbutton">Добавить отчет</button>
       {reports.map((r) => (
         <Link to={`/${r.pathto}/${r.id}`} key={r.id} className="report-link">
           <div className="report-card">

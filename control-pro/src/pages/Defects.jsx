@@ -20,6 +20,7 @@ export default function Defects() {
 
         <Header></Header>
         <main>
+
             <div className="projects-header">
                 <h1 className="hpage">
                     Дефекты
@@ -29,6 +30,7 @@ export default function Defects() {
                 <SearchBar></SearchBar>
 
             </div>
+            <button className="adminbutton">Добавить дефект</button>
             <div className="projects-list">
                 {testProjects2.map((project) => (
                     <ElProjects 

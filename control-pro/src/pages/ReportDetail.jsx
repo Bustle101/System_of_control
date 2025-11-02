@@ -13,6 +13,8 @@ export default function ReportDetail() {
             <div>
                 <Link to="/reports">Назад</Link>
             </div>
+            <button className="adminbutton">Редактировать</button>
+            <button className="adminbutton">Удалить</button>
             <h1>Отчёт{id}</h1>
             <h2>Название отчета</h2>
             <p>описание отчета</p>

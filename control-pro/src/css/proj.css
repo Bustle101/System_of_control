@@ -56,3 +56,11 @@
 .details-btn:hover {
   background-color: #45a049;
 }
+
+.adminbutton{
+  background-color: rgb(122, 148, 190);
+}
+.adminbutton:hover{
+  background-color: rgb(88, 123, 182);
+}
+

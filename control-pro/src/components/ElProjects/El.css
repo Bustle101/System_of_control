@@ -1,7 +1,6 @@
 .project-card {
   background: #e5f0ff;
   border-radius: 15px;
-  
   width: 30%;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -24,7 +23,7 @@
   margin-bottom: 10px;
 }
 
-.project-card button {
+.details-btn button {
   background: #7dd6a1;
   border: none;
   padding: 8px 15px;
@@ -34,6 +33,15 @@
   transition: background 0.2s ease;
 }
 
-.project-card button:hover {
+.details-btn button:hover {
   background: #6cc491;
+  
+}
+
+.adminbutton{
+  background-color: rgb(122, 148, 190);
+  margin: 5px;
+}
+.adminbutton:hover{
+  background-color: rgb(88, 123, 182);
 }

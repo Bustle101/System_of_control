@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 export default function ElProjects({ id, name, status, image, pathto }) {
   return (
     <div className="project-card">
+     
+      <button className="adminbutton">Редактировать</button>
+      <button className="adminbutton">Удалить</button>
+    
       <h3>{name}</h3>
       <img src={image} alt={name} width="200" />
       <p>Этап: {status}</p>

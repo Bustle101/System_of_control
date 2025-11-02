@@ -46,15 +46,17 @@ export const register = async (req, res) => {
 };
 
 // Авторизация пользователя (вход)
+
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Введите почту и пароль" });
+    if (!username || !password) {
+      return res.status(400).json({ message: "Введите логин и пароль" });
     }
 
-    const userRes = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    // Находим пользователя по логину
+    const userRes = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
     if (userRes.rowCount === 0) {
       return res.status(401).json({ message: "Пользователь не найден" });
     }

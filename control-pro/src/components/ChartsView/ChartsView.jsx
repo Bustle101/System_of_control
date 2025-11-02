@@ -11,7 +11,10 @@ export default function ChartsView() {
 
       
       {charts.map(c => (
+        
         <div key={c.id} className="charts-view">
+          <button className="adminbutton">Редактировать</button>
+          <button className="adminbutton">Удалить</button>
           <h3>{c.name}</h3>
           <img src={c.image} alt={c.name} />
           <p>{c.year}</p>

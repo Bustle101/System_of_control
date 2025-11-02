@@ -3,7 +3,7 @@ import { requestPasswordReset, resetPassword } from "../controllers/passwordCont
 
 const router = express.Router();
 
-router.post("/request", requestPasswordReset); // отправка письма
-router.post("/reset", resetPassword);           // установка нового пароля
+router.post("/request", requestPasswordReset);
+router.post("/reset", resetPassword);
 
 export default router;

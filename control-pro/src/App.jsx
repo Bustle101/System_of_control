@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import ProjectDetail from "./pages/ProjectDetail";
 import Defectsdetail from "./pages/DefectsDetail";
 import ReportDetail from "./pages/ReportDetail";
+import ResetPassword from "./pages/Resetpassword";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/defects/:id" element={<Defectsdetail />} />
         <Route path="/reports/:id" element={<ReportDetail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
       </Routes>
     </>

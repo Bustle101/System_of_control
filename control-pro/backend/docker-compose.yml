@@ -1,0 +1,39 @@
+services:
+ 
+  service_users:
+    build: ./service_users
+    container_name: service_users
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./service_users/.env
+    networks:
+      - backend_net
+
+ 
+  service_orders:
+    build: ./service_orders
+    container_name: service_orders
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./service_orders/.env
+    networks:
+      - backend_net
+
+ 
+  api_gateway:
+    build: ./api_gateway
+    container_name: api_gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./api_gateway/.env
+    depends_on:
+      - service_users
+      - service_orders
+    networks:
+      - backend_net
+
+networks:
+  backend_net:

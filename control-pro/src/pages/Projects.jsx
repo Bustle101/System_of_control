@@ -9,6 +9,7 @@ const testProjects = [
   { id: 2, name: "Офисный центр Sky", status: "Отделочные работы", image: "/images/stroyka.jpg", pathto: "projects" },
 ];
 
+
 export default function Projects() {
   return (
     <div className="basa">
@@ -18,7 +19,9 @@ export default function Projects() {
           <h1 className="hpage">Проекты</h1>
           <SearchBar className="searchbar" />
         </div>
-
+        
+        <button className="adminbutton">Добавить проект</button>
+        
         <div className="projects-list">
           {testProjects.map((project) => (
             <ElProjects 
@@ -31,6 +34,7 @@ export default function Projects() {
             />
           ))}
         </div>
+
       </main>
     </div>
   )
