@@ -1,5 +1,20 @@
 services:
- 
+  db:
+    image: postgres:15
+    container_name: systemcontrol_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"     
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d 
+    networks:
+      - backend_net
+
   service_users:
     build: ./service_users
     container_name: service_users
@@ -7,10 +22,11 @@ services:
       - "3001:3001"
     env_file:
       - ./service_users/.env
+    depends_on:
+      - db
     networks:
       - backend_net
 
- 
   service_orders:
     build: ./service_orders
     container_name: service_orders
@@ -18,10 +34,11 @@ services:
       - "3002:3002"
     env_file:
       - ./service_orders/.env
+    depends_on:
+      - db
     networks:
       - backend_net
 
- 
   api_gateway:
     build: ./api_gateway
     container_name: api_gateway
@@ -34,6 +51,9 @@ services:
       - service_orders
     networks:
       - backend_net
+
+volumes:
+  pg_data:
 
 networks:
   backend_net:

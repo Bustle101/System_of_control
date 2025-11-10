@@ -4,29 +4,32 @@ import dotenv from "dotenv";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
+import morgan from "morgan";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Миддлвары
+// middleware для запросов
 app.use(cors());
-app.use(express.json());
+app.use(morgan("dev"));
+app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 
-// Лимитер запросов
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 минута
-  max: 100,            // максимум 100 запросов в минуту
-});
-app.use(limiter);
-
-// Проверка токена JWT (для защищённых маршрутов)
+// проверка JWT
 const verifyToken = (req, res, next) => {
-  if (req.path.includes("/auth") || req.method === "OPTIONS") return next();
+  const publicPaths = [
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/password/forgot",
+    "/api/password/reset",
+  ];
+
+  if (publicPaths.some((p) => req.path.startsWith(p))) return next();
 
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "Нет токена" });
+  if (!authHeader)
+    return res.status(401).json({ message: "Нет токена авторизации" });
 
   const token = authHeader.split(" ")[1];
   try {
@@ -34,17 +37,31 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch {
-    return res.status(403).json({ message: "Неверный токен" });
+    return res.status(403).json({ message: "Неверный или истёкший токен" });
   }
 };
+
 app.use(verifyToken);
 
-// Проксирование запросов
+app.use(
+  "/api/auth",
+  createProxyMiddleware({
+    target: process.env.USERS_SERVICE_URL,
+    changeOrigin: true,
+    logLevel: "debug",
+    selfHandleResponse: false,
+  })
+);
+
+
+// прокси микросервисов
 app.use(
   "/api/users",
   createProxyMiddleware({
     target: process.env.USERS_SERVICE_URL,
     changeOrigin: true,
+    logLevel: "debug",
+    selfHandleResponse: false, 
   })
 );
 
@@ -53,15 +70,16 @@ app.use(
   createProxyMiddleware({
     target: process.env.ORDERS_SERVICE_URL,
     changeOrigin: true,
+    logLevel: "debug",
+    selfHandleResponse: false,
   })
 );
 
-// Тестовый маршрут
-app.get("/", (req, res) =>
-  res.send(" Все сервисы подключены.")
-);
 
-// Запуск
+app.get("/", (req, res) => {
+  res.send("API Gateway работает. Все сервисы подключены.");
+});
+
 app.listen(PORT, () => {
   console.log(`API Gateway запущен на порту ${PORT}`);
   console.log(`http://localhost:${PORT}/`);
