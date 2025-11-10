@@ -11,12 +11,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// middleware для запросов
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173", credentials: true }));
 app.use(morgan("dev"));
 app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 
-// проверка JWT
 const verifyToken = (req, res, next) => {
   const publicPaths = [
     "/api/auth/login",
@@ -48,20 +46,26 @@ app.use(
   createProxyMiddleware({
     target: process.env.USERS_SERVICE_URL,
     changeOrigin: true,
-    logLevel: "debug",
-    selfHandleResponse: false,
+    onProxyReq: (proxyReq, req) => {
+      if (req.headers.authorization) {
+        proxyReq.setHeader("authorization", req.headers.authorization);
+      }
+    },
   })
 );
 
-
-// прокси микросервисов
 app.use(
   "/api/users",
   createProxyMiddleware({
     target: process.env.USERS_SERVICE_URL,
     changeOrigin: true,
     logLevel: "debug",
-    selfHandleResponse: false, 
+    selfHandleResponse: false,
+    onProxyReq: (proxyReq, req) => {
+      if (req.headers.authorization) {
+        proxyReq.setHeader("authorization", req.headers.authorization);
+      }
+    },
   })
 );
 
@@ -72,9 +76,13 @@ app.use(
     changeOrigin: true,
     logLevel: "debug",
     selfHandleResponse: false,
+    onProxyReq: (proxyReq, req) => {
+      if (req.headers.authorization) {
+        proxyReq.setHeader("authorization", req.headers.authorization);
+      }
+    },
   })
 );
-
 
 app.get("/", (req, res) => {
   res.send("API Gateway работает. Все сервисы подключены.");

@@ -1,10 +1,16 @@
 import pkg from "pg";
-import dotenv from "dotenv";
-
-dotenv.config({ path: "./server/.env" });
-
 const { Pool } = pkg;
 
-export const pool = new Pool({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
+
+pool.on("connect", () => {
+  console.log("Подключение к базе данных установлено");
+});
+
+pool.on("error", (err) => {
+  console.error("Ошибка подключения к базе данных:", err);
+});
+
+export { pool };
