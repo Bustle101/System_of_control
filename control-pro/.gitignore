@@ -25,4 +25,4 @@ dist-ssr
 
 *.env
 pg_data/
-/backend/service_orders/uploads/
+uploads/
