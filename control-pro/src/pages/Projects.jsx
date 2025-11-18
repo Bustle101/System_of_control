@@ -6,6 +6,7 @@ import "../css/main.css";
 import "../css/proj.css";
 import ElProjects from "../components/ElProjects/ElProjects";
 import AddProjectForm from "../components/ElProjects/ProjectForm";
+import ModalWrapper from "../components/ModalWrapper/ModalWrapper";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -13,6 +14,7 @@ export default function Projects() {
   const [error, setError] = useState(null);
 
   const [showForm, setShowForm] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const loadProjects = () => {
     setLoading(true);
@@ -30,9 +32,27 @@ export default function Projects() {
     loadProjects();
   }, []);
 
-  const handleCreated = (project) => {
-   
-    setProjects((prev) => [project, ...prev]);
+  const handleCreated = () => {
+    setSelectedProject(null);
+    setShowForm(false);
+    loadProjects();
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Удалить проект?")) return;
+
+    try {
+      await api.delete(`/orders/${id}`);
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      alert("Не удалось удалить проект");
+    }
+  };
+
+  const handleEdit = (id) => {
+    const project = projects.find((p) => p.id === id);
+    setSelectedProject(project);
+    setShowForm(true);
   };
 
   return (
@@ -46,17 +66,23 @@ export default function Projects() {
 
         <button
           className="adminbutton"
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => {
+            setSelectedProject(null);
+            setShowForm((v) => !v)
+          }}
           style={{ marginBottom: 12 }}
         >
           {showForm ? "Закрыть форму" : "Добавить проект"}
         </button>
 
         {showForm && (
-          <AddProjectForm
-            onCreated={handleCreated}
-            onClose={() => setShowForm(false)}
-          />
+          <ModalWrapper onClose={() => setShowForm(false)}>
+            <AddProjectForm
+              onCreated={handleCreated}
+              onClose={() => setShowForm(false)}
+              editData={selectedProject}
+            />
+          </ModalWrapper>
         )}
 
         {loading && <p>Загрузка...</p>}
@@ -71,8 +97,14 @@ export default function Projects() {
                   id={p.id}
                   name={p.name}
                   status={p.status}
-                  image={p.photo_url || "/images/stroyka.jpg"}
+                  image={
+                    p.photo_url
+                      ? `${import.meta.env.VITE_API_URL || "http://localhost:3000"}${p.photo_url}`
+                      : "/images/stroyka.jpg"
+                    }
                   pathto="projects"
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                 />
               ))
             ) : (

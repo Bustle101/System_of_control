@@ -38,6 +38,8 @@ services:
       - db
     networks:
       - backend_net
+    volumes:
+      - ./service_orders/uploads:/app/uploads
 
   api_gateway:
     build: ./api_gateway

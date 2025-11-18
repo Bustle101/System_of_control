@@ -21,6 +21,7 @@ const verifyToken = (req, res, next) => {
     "/api/auth/register",
     "/api/password/forgot",
     "/api/password/reset",
+    "/uploads",
   ];
 
   if (publicPaths.some((p) => req.path.startsWith(p))) return next();
@@ -81,6 +82,15 @@ app.use(
         proxyReq.setHeader("authorization", req.headers.authorization);
       }
     },
+  })
+);
+
+
+app.use(
+  "/uploads",
+  createProxyMiddleware({
+    target: "http://service_orders:3002",
+    changeOrigin: true,
   })
 );
 

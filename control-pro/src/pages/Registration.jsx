@@ -4,7 +4,6 @@ import { useState } from "react";
 import api from "../api/axios";
 
 export default function Registration() {
-
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -14,6 +13,13 @@ export default function Registration() {
   });
 
   const [message, setMessage] = useState("");
+
+  // Маппинг русских названий → английские ключи для БД
+  const ROLE_MAP = {
+    "Менеджер": "manager",
+    "Инженер": "engineer",
+    "Наблюдатель": "observer",
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,11 +54,11 @@ export default function Registration() {
     }
 
     try {
-      const res = await api.post("/auth/register", {
+      await api.post("/auth/register", {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
+        role: ROLE_MAP[formData.role], // <--- ВАЖНО: отправляем английское значение
       });
 
       setMessage("Регистрация прошла успешно!");
@@ -66,9 +72,7 @@ export default function Registration() {
         role: "Менеджер",
       });
 
-
-    } 
-    catch (error) {
+    } catch (error) {
       console.error(error);
       setMessage(error.response?.data?.message || "Ошибка регистрации");
     }

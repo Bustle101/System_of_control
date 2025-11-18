@@ -29,6 +29,7 @@ export default function App() {
         <Route path="/reports/:id" element={<ReportDetail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
+
       </Routes>
     </>
   );
