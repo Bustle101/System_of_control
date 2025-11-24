@@ -1,0 +1,66 @@
+.projects-list {
+  display: flex;
+  flex-wrap: wrap;            /* перенос на новую строку */
+  justify-content: flex-start;/* выравнивание по левому краю */
+  gap: 20px;                  /* расстояние между карточками */
+  padding: 20px 50px;
+  box-sizing: border-box;
+}
+
+.project-card {
+  flex: 1 1 calc(33.333% - 40px); /* три карточки в строке с отступами */
+  background-color: #e5f1ff;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.project-card img {
+  width: 100%;
+  max-width: 250px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 10px auto;
+}
+
+.project-card h2 {
+  font-size: 20px;
+  margin: 10px 0;
+  color: #004c4c;
+}
+
+.project-card p {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.details-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.details-btn:hover {
+  background-color: #45a049;
+}
+
+.adminbutton{
+  background-color: rgb(122, 148, 190);
+}
+.adminbutton:hover{
+  background-color: rgb(88, 123, 182);
+}
+
