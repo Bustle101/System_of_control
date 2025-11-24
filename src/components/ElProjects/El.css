@@ -1,0 +1,67 @@
+/* Карточка проекта */
+.project-card {
+  /* базовый размер: 3 карточки в ряд */
+  width: 320px;
+  min-height: 380px;
+  max-height: 450px;
+
+  background: #e5f1ff;
+  border-radius: 15px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Заголовок */
+.project-card h3 {
+  margin: 10px 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #004c4c;
+}
+
+/* Картинка */
+.project-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+/* Текст под картинкой */
+.project-card p {
+  margin: 8px 0 12px;
+  color: #333;
+}
+
+/* Кнопки в верхней части (редактировать / удалить) */
+.adminbutton {
+  margin: 5px;
+}
+
+/* Адаптив: на средних экранах — по 2 карточки в ряд */
+@media (max-width: 1200px) {
+  .project-card {
+    width: 45%;
+    max-width: none;
+  }
+}
+
+/* Адаптив: на телефонах — по 1 карточке в ряд */
+@media (max-width: 700px) {
+  .project-card {
+    width: 100%;
+  }
+}

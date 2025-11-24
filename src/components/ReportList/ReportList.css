@@ -1,0 +1,22 @@
+/* Общий стиль кнопок */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #7dd6a1;
+  color: white;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background-color: #6cc491;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #b2e2c9;
+  cursor: not-allowed;
+}

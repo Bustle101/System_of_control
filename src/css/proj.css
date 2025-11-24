@@ -1,0 +1,22 @@
+/* Контейнер для списка проектов */
+.projects-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px 0;
+  box-sizing: border-box;
+}
+
+/* Адаптив */
+@media (max-width: 900px) {
+  .projects-list {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .projects-list {
+    padding: 10px;
+  }
+}

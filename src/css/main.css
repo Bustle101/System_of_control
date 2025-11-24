@@ -1,0 +1,43 @@
+/* ==== HOME PAGE STYLES ==== */
+
+/* Главный заголовок */
+main h1 {
+  font-size: 38px;
+  margin-bottom: 10px;
+  color: #006644;
+  text-align: left;
+}
+
+/* Подзаголовок */
+.subtitle {
+  font-size: 18px;
+  margin-bottom: 30px;
+  color: #333;
+  text-align: left;
+}
+
+/* Блок с фото */
+.hero {
+  max-width: 800px;
+  margin: 20px auto 30px;
+}
+
+.hero img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Блок "О компании" */
+.about {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #e5f5ff;
+  padding: 25px 35px;
+  border-radius: 15px;
+  font-size: 16px;
+  color: #004466;
+  line-height: 1.7;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: left;
+}
