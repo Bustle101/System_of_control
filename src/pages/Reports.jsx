@@ -16,7 +16,7 @@ export default function Reports() {
   return (
     <div className="basa">
       <Header></Header>  
-      {/* Переключатель */}
+   
       <main>
         <div className="projects-header">
             <button style={{marginLeft: '100px'}}
@@ -35,7 +35,7 @@ export default function Reports() {
             <SearchBar placeholder="Поиск..." onSearch={(q) => console.log(q)} />
         </div>
 
-        {/* Контент */}
+     
         {activeTab === "reports" ? <ReportsList /> : <ChartsView />}
       </main>
     </div>

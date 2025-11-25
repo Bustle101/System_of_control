@@ -1,4 +1,4 @@
-import "../css/entry.css";
+import '../css/main.css'
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import api from "../api/axios";
@@ -14,7 +14,7 @@ export default function Registration() {
 
   const [message, setMessage] = useState("");
 
-  // Маппинг русских названий → английские ключи для БД
+  
   const ROLE_MAP = {
     "Менеджер": "manager",
     "Инженер": "engineer",
@@ -30,7 +30,7 @@ export default function Registration() {
     e.preventDefault();
     setMessage("");
 
-    // все поля заполнены
+   
     if (
       !formData.username.trim() ||
       !formData.email.trim() ||
@@ -41,13 +41,12 @@ export default function Registration() {
       return;
     }
 
-    // длина пароля
     if (formData.password.length < 6) {
       setMessage("Пароль должен содержать не менее 6 символов");
       return;
     }
 
-    // совпадение паролей
+   
     if (formData.password !== formData.confirmPassword) {
       setMessage("Пароли не совпадают");
       return;
@@ -58,12 +57,12 @@ export default function Registration() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: ROLE_MAP[formData.role], // <--- ВАЖНО: отправляем английское значение
+        role: ROLE_MAP[formData.role], 
       });
 
       setMessage("Регистрация прошла успешно!");
 
-      // Очистка формы
+    
       setFormData({
         username: "",
         email: "",

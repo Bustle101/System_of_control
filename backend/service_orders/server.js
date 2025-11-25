@@ -27,7 +27,12 @@ app.use("/api/orders", orderRoutes);
 app.get("/", (req, res) => res.send("Service Orders работает"));
 
 // Запуск сервера
-app.listen(PORT, () => {
-  console.log(`Service Orders запущен на порту ${PORT}`);
-  console.log(`http://localhost:${PORT}/`);
-});
+
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Service Orders запущен на порту ${PORT}`);
+    console.log(`http://localhost:${PORT}/`);
+  });
+}
+export default app;

@@ -1,4 +1,4 @@
-import "../css/entry.css";
+import '../css/main.css'
 import { useSearchParams,useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../api/axios";
@@ -36,7 +36,7 @@ export default function ResetPassword() {
 
       setMessage(res.data.message + " Переход на страницу входа...");
 
-      // ⏳ Через 2 секунды переход на страницу входа
+      
       setTimeout(() => navigate("/entrance"), 2000);
     } catch (error) {
       console.error(error);

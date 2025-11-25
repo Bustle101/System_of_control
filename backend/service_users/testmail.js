@@ -17,14 +17,14 @@ const main = async () => {
   try {
     const info = await transporter.sendMail({
       from: `"System Control" <${process.env.SMTP_USER}>`,
-      to: "salnikovvladislav2001@gmail.com", // ← на какую почту проверить доставку
+      to: "test2001@gmail.com", 
       subject: "Тестовое письмо — Система Контроля",
       text: "кусь за ухо",
     });
 
-    console.log("✅ Письмо отправлено:", info.messageId);
+    console.log("Письмо отправлено:", info.messageId);
   } catch (err) {
-    console.error("❌ Ошибка при отправке:", err);
+    console.error("Ошибка при отправке:", err);
   }
 };
 

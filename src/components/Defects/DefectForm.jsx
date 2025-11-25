@@ -5,15 +5,16 @@ import "./DefectForm.css";
 export default function DefectForm({ onCreated, onClose, editData }) {
   const isEdit = Boolean(editData);
 
+
+  const FIXED_STATUS = "новый";
+
   const [projectId, setProjectId] = useState(editData?.project_id || "");
   const [title, setTitle] = useState(editData?.title || "");
   const [description, setDescription] = useState(editData?.description || "");
   const [priority, setPriority] = useState(editData?.priority || "средний");
   const [assignedToId, setAssignedToId] = useState(editData?.assigned_to_id || "");
   const [dueDate, setDueDate] = useState(editData?.due_date || "");
-  const [status, setStatus] = useState(editData?.status || "новый");
 
-  
   const [file, setFile] = useState(null);
 
   const [projects, setProjects] = useState([]);
@@ -22,8 +23,8 @@ export default function DefectForm({ onCreated, onClose, editData }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.get("/orders").then((r) => setProjects(r.data.data || []));
-    api.get("/users/engineers").then((r) => setEngineers(r.data.data || []));
+    api.get("/orders").then(r => setProjects(r.data.data || []));
+    api.get("/users/engineers").then(r => setEngineers(r.data.data || []));
   }, []);
 
   const handleSubmit = async (e) => {
@@ -39,30 +40,30 @@ export default function DefectForm({ onCreated, onClose, editData }) {
       formData.append("priority", priority);
       formData.append("assigned_to_id", assignedToId || "");
       formData.append("due_date", dueDate || "");
-      formData.append("status", status);
 
       if (file) formData.append("file", file);
 
+   
       if (!isEdit) {
-        const res = await api.post("/orders/defects", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-
-        console.log("Ответ сервера:", res.data);
-      } else {
-        const res = await api.put(`/orders/defects/${editData.id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-
-        console.log("Ответ сервера (update):", res.data);
+       
+        formData.append("status", FIXED_STATUS);
       }
-
+   
+      if (!isEdit) {
+        await api.post("/orders/defects", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      } else {
+        await api.put(`/orders/defects/${editData.id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      }
 
       onCreated();
 
     } catch (err) {
-        console.log(err.response?.data);   
-        setError("Ошибка сохранения");
+      console.log(err.response?.data);
+      setError("Ошибка сохранения");
     } finally {
       setPending(false);
     }
@@ -70,7 +71,6 @@ export default function DefectForm({ onCreated, onClose, editData }) {
 
   return (
     <form onSubmit={handleSubmit} className="projform-container">
-
       <h2 className="projform-title">
         {isEdit ? "Редактировать дефект" : "Создать дефект"}
       </h2>
@@ -150,7 +150,6 @@ export default function DefectForm({ onCreated, onClose, editData }) {
         />
       </label>
 
-
       <label className="projform-label">
         Фото
         <input
@@ -163,32 +162,14 @@ export default function DefectForm({ onCreated, onClose, editData }) {
           Добавить
         </label>
 
-        {file && (
-          <span style={{ fontSize: "14px", marginTop: "6px" }}>
-            {file.name}
-          </span>
-        )}
+        {file && <span style={{ fontSize: "14px" }}>{file.name}</span>}
       </label>
 
-      <label className="projform-label">
-        Статус
-        <select
-          className="projform-input"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="новый">Новый</option>
-          <option value="в работе">В работе</option>
-          <option value="на проверке">На проверке</option>
-          <option value="закрыт">Закрыт</option>
-        </select>
-      </label>
 
       <div className="projform-buttons">
         <button className="projform-submit" disabled={pending}>
           {isEdit ? "Сохранить" : "Создать"}
         </button>
-
       </div>
 
     </form>

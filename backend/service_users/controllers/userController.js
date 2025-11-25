@@ -1,9 +1,7 @@
 import { pool } from "../db.js";
 import argon2 from "argon2";
 
-/**
- * Получить список всех пользователей
- */
+
 export const getUsers = async (req, res) => {
   try {
     const result = await pool.query(
@@ -16,9 +14,7 @@ export const getUsers = async (req, res) => {
   }
 };
 
-/**
- * Получить пользователя по ID
- */
+
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,9 +35,7 @@ export const getUserById = async (req, res) => {
   }
 };
 
-/**
- * Обновить имя пользователя (логин)
- */
+
 export const updateUsername = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,9 +64,7 @@ export const updateUsername = async (req, res) => {
   }
 };
 
-/**
- * Смена пароля пользователя
- */
+
 export const changePassword = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,9 +92,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-/**
- * Удалить пользователя
- */
+
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;

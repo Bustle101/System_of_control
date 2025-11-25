@@ -11,8 +11,7 @@ import ElDefect from "../components/Defects/ElDefect";
 import DefectForm from "../components/Defects/DefectForm";
 import ModalWrapper from "../components/ModalWrapper/ModalWrapper";
 
-const getName = (d) =>
-  d?.title?.toLowerCase() || "";
+const getName = (d) => d?.title?.toLowerCase() || "";
 
 export default function Defects() {
   const [defects, setDefects] = useState([]);
@@ -31,6 +30,20 @@ export default function Defects() {
 
   const [searchReset, setSearchReset] = useState(0);
 
+
+  let user = {};
+  try {
+    const raw = localStorage.getItem("user");
+    user = raw && raw !== "undefined" ? JSON.parse(raw) : {};
+  } catch {
+    user = {};
+  }
+
+  const role = user.role || "";
+  const canEdit = role === "engineer";
+  const canCreate = role === "engineer";
+  const canDelete = role === "engineer";
+
   const loadAll = async () => {
     try {
       setLoading(true);
@@ -42,21 +55,18 @@ export default function Defects() {
 
       const defectsData = defRes.data.data || [];
       const projectsData = projRes.data.data || [];
-      
-      const projectMap = {};
-      projectsData.forEach(p => (projectMap[p.id] = p.name));
 
-      const enriched = defectsData.map(d => ({
+      const projectMap = {};
+      projectsData.forEach((p) => (projectMap[p.id] = p.name));
+
+      const enriched = defectsData.map((d) => ({
         ...d,
         project_name: projectMap[d.project_id] || "Не найден"
-        
       }));
-
 
       setDefects(enriched);
       setFilteredDefects(enriched);
       setProjects(projectsData);
-
     } catch (err) {
       console.error(err);
       setError("Ошибка загрузки данных");
@@ -69,44 +79,33 @@ export default function Defects() {
     loadAll();
   }, []);
 
-  
   const cleanStatus = (s) =>
-    (s || "")
-      .toLowerCase()
-      .replace(/"/g, "")  
-      .replace(/[\s\u00A0]+/g, " ")
-      .trim();
+    (s || "").toLowerCase().replace(/"/g, "").replace(/[\s\u00A0]+/g, " ").trim();
 
   const applyFilters = (list, { search, status, sort }) => {
     let result = [...list];
 
-
     if (search.trim()) {
       const lower = search.toLowerCase();
 
-      result = result.filter(defect => {
+      result = result.filter((defect) => {
         const name =
-          defect.name?.toLowerCase() ||
           defect.title?.toLowerCase() ||
           defect.defect_name?.toLowerCase() ||
           defect.label?.toLowerCase() ||
           "";
 
         const project = defect.project_name?.toLowerCase() || "";
-
-        return (
-          name.includes(lower) ||
-          project.includes(lower)
-        );
+        return name.includes(lower) || project.includes(lower);
       });
     }
 
-    
     if (status) {
-      result = result.filter(d => cleanStatus(d.status) ===  cleanStatus(status));
+      result = result.filter(
+        (d) => cleanStatus(d.status) === cleanStatus(status)
+      );
     }
 
-  
     if (sort) {
       result = applySort(result, sort);
     }
@@ -114,45 +113,35 @@ export default function Defects() {
     return result;
   };
 
-
-  const handleSearch = query => {
+  const handleSearch = (query) => {
     setSearchQuery(query.toLowerCase());
-
     const newList = applyFilters(defects, {
       search: query.toLowerCase(),
       status: filterStatus,
       sort: sortType
     });
-
     setFilteredDefects(newList);
   };
 
-
-  const handleFilter = status => {
+  const handleFilter = (status) => {
     setFilterStatus(status);
-
     const newList = applyFilters(defects, {
       search: searchQuery,
-      status: status,
+      status,
       sort: sortType
     });
-
     setFilteredDefects(newList);
   };
 
-
-  const handleSort = type => {
+  const handleSort = (type) => {
     setSortType(type);
-
     const newList = applyFilters(defects, {
       search: searchQuery,
       status: filterStatus,
       sort: type
     });
-
     setFilteredDefects(newList);
   };
-
 
   const applySort = (array, type) => {
     let sorted = [...array];
@@ -165,19 +154,19 @@ export default function Defects() {
 
     if (type === "status") {
       const order = ["новый", "в работе", "на проверке", "закрыт"];
-
-      sorted.sort((a, b) =>
-        order.indexOf(cleanStatus(a.status)) -
-        order.indexOf(cleanStatus(b.status))
+      sorted.sort(
+        (a, b) =>
+          order.indexOf(cleanStatus(a.status)) -
+          order.indexOf(cleanStatus(b.status))
       );
     }
 
     return sorted;
   };
 
+  const handleDelete = async (id) => {
+    if (!canDelete) return alert("Недостаточно прав");
 
-
-  const handleDelete = async id => {
     if (!window.confirm("Удалить дефект?")) return;
 
     try {
@@ -188,8 +177,10 @@ export default function Defects() {
     }
   };
 
-  const handleEdit = id => {
-    const defect = defects.find(d => d.id === id);
+  const handleEdit = (id) => {
+    if (!canEdit) return alert("Недостаточно прав");
+
+    const defect = defects.find((d) => d.id === id);
     setSelectedDefect(defect);
     setShowForm(true);
   };
@@ -198,9 +189,8 @@ export default function Defects() {
     setSelectedDefect(null);
     setShowForm(false);
     loadAll();
-    setSearchReset(v => v + 1);
+    setSearchReset((v) => v + 1);
   };
-
 
   return (
     <div className="container">
@@ -210,23 +200,25 @@ export default function Defects() {
         <div className="projects-header">
           <h1 className="hpage">Дефекты</h1>
 
-          {/* фильтр, сортировка, поиск */}
           <Filter onFilter={handleFilter} />
           <Sort onSort={handleSort} />
           <SearchBar onSearch={handleSearch} resetTrigger={searchReset} />
         </div>
 
-        <button
-          className="adminbutton"
-          onClick={() => {
-            setSelectedDefect(null);
-            setShowForm(v => !v);
-          }}
-        >
-          {showForm ? "Закрыть форму" : "Добавить дефект"}
-        </button>
+      
+        {canCreate && (
+          <button
+            className="adminbutton"
+            onClick={() => {
+              setSelectedDefect(null);
+              setShowForm((v) => !v);
+            }}
+          >
+            {showForm ? "Закрыть форму" : "Добавить дефект"}
+          </button>
+        )}
 
-        {showForm && (
+        {showForm && canCreate && (
           <ModalWrapper onClose={() => setShowForm(false)}>
             <DefectForm
               onCreated={handleCreated}
@@ -242,13 +234,13 @@ export default function Defects() {
         {!loading && !error && (
           <div className="projects-list">
             {filteredDefects.length > 0 ? (
-              filteredDefects.map(d => (
+              filteredDefects.map((d) => (
                 <ElDefect
                   key={d.id}
                   {...d}
                   project={d.project_name}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onEdit={canEdit ? handleEdit : null}
+                  onDelete={canDelete ? handleDelete : null}
                 />
               ))
             ) : (

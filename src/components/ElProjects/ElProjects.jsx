@@ -5,19 +5,26 @@ export default function ElProjects({ id, name, status, image, pathto, onEdit, on
   return (
     <div className="project-card">
 
-      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-        <button className="adminbutton" onClick={() => onEdit(id)}>
-          Редактировать
-        </button>
+   
+      {(onEdit || onDelete) && (
+        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+          {onEdit && (
+            <button className="adminbutton" onClick={() => onEdit(id)}>
+              Редактировать
+            </button>
+          )}
 
-        <button
-          className="adminbutton"
-          style={{ backgroundColor: "#d16565" }}
-          onClick={() => onDelete(id)}
-        >
-          Удалить
-        </button>
-      </div>
+          {onDelete && (
+            <button
+              className="adminbutton"
+              style={{ backgroundColor: "#d16565" }}
+              onClick={() => onDelete(id)}
+            >
+              Удалить
+            </button>
+          )}
+        </div>
+      )}
 
       <h3>{name}</h3>
       <img src={image} alt={name} width="200" />

@@ -3,14 +3,11 @@ import fs from "fs";
 
 const STATUS = ["создан", "в работе", "выполнен", "отменён"];
 
-
-const canAccess = (user, row) => row && row.user_id === user.id;
+const isEngineer = (user) => user?.role === "engineer";
 
 
 export const getProjects = async (req, res) => {
   try {
-    const { id: userId } = req.user;
-
     const limit = Math.min(parseInt(req.query.limit || "20", 10), 100);
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);
     const offset = (page - 1) * limit;
@@ -23,37 +20,42 @@ export const getProjects = async (req, res) => {
     const sql = `
       SELECT *
       FROM projects
-      WHERE user_id = $1
       ORDER BY ${sortBy} ${order}
-      LIMIT $2
-      OFFSET $3;
+      LIMIT $1 OFFSET $2;
     `;
 
-    const { rows } = await pool.query(sql, [userId, limit, offset]);
+    const { rows } = await pool.query(sql, [limit, offset]);
+
     res.json({ success: true, data: rows });
   } catch (error) {
-    console.error("Ошибка при получении заказов:", error);
-    res
-      .status(500)
-      .json({ success: false, error: { code: "ORDERS_LIST_FAILED", message: "Ошибка при получении заказов" } });
+    console.error("Ошибка при получении проектов:", error);
+    res.status(500).json({
+      success: false,
+      error: { code: "ORDERS_LIST_FAILED", message: "Ошибка при получении проектов" }
+    });
   }
 };
 
-// POST /api/orders
+
 export const createProject = async (req, res) => {
   try {
-    const { id: userId } = req.user;
-    let { name, description, items = "[]", total = 0, status = "создан" } = req.body;
+    const user = req.user;
+    if (!isEngineer(user)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "Недостаточно прав" }
+      });
+    }
 
+    let { name, description, items = "[]", total = 0, status = "создан" } = req.body;
 
     if (!name?.trim()) {
       return res.status(400).json({
         success: false,
-        error: { code: "VALIDATION", message: "Поле name обязательно" },
+        error: { code: "VALIDATION", message: "Поле name обязательно" }
       });
     }
 
-   
     if (typeof items === "string") {
       try {
         items = JSON.parse(items);
@@ -62,9 +64,7 @@ export const createProject = async (req, res) => {
       }
     }
 
-  
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
-
 
     const insert = `
       INSERT INTO projects (user_id, name, description, items, status, total, photo_url)
@@ -73,13 +73,13 @@ export const createProject = async (req, res) => {
     `;
 
     const params = [
-      userId,
+      user.id,
       name.trim(),
       description || null,
       JSON.stringify(items),
       status,
       Number(total) || 0,
-      filePath,
+      filePath
     ];
 
     const { rows } = await pool.query(insert, params);
@@ -89,50 +89,54 @@ export const createProject = async (req, res) => {
     console.error("Ошибка при создании проекта:", error);
     res.status(500).json({
       success: false,
-      error: {
-        code: "ORDER_CREATE_FAILED",
-        message: "Ошибка при создании проекта",
-      },
+      error: { code: "ORDER_CREATE_FAILED", message: "Ошибка при создании проекта" }
     });
   }
 };
 
 
-
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
+
     const { rows } = await pool.query("SELECT * FROM projects WHERE id = $1", [id]);
 
-    if (rows.length === 0)
-      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Проект не найден" } });
-
-    if (!canAccess(req.user, rows[0])) {
-      return res
-        .status(403)
-        .json({ success: false, error: { code: "FORBIDDEN", message: "Недостаточно прав для доступа" } });
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { code: "NOT_FOUND", message: "Проект не найден" }
+      });
     }
+
 
     res.json({ success: true, data: rows[0] });
   } catch (error) {
     console.error("Ошибка при получении проекта:", error);
-    res
-      .status(500)
-      .json({ success: false, error: { code: "ORDER_GET_FAILED", message: "Ошибка при получении проекта" } });
+    res.status(500).json({
+      success: false,
+      error: { code: "ORDER_GET_FAILED", message: "Ошибка при получении проекта" }
+    });
   }
 };
 
 
 export const updateProject = async (req, res) => {
   try {
+    const user = req.user;
+    if (!isEngineer(user)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "Недостаточно прав" }
+      });
+    }
+
     const { id } = req.params;
     let { name, description, items, total, status } = req.body;
 
-  
     if (status && !STATUS.includes(status)) {
       return res.status(400).json({
         success: false,
-        error: { code: "VALIDATION", message: "Недопустимый статус" },
+        error: { code: "VALIDATION", message: "Недопустимый статус" }
       });
     }
 
@@ -140,34 +144,38 @@ export const updateProject = async (req, res) => {
       try {
         items = JSON.parse(items);
       } catch {
-        items = undefined; 
+        items = undefined;
       }
     }
 
-   
     total = total !== undefined ? Number(total) : undefined;
 
     const newFilePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const cur = await pool.query("SELECT * FROM projects WHERE id = $1", [id]);
-    if (cur.rowCount === 0)
-      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Проект не найден" } });
+
+    if (cur.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { code: "NOT_FOUND", message: "Проект не найден" }
+      });
+    }
 
     const row = cur.rows[0];
 
-    if (!canAccess(req.user, row))
-      return res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Недостаточно прав" } });
-
-    if (row.status === "выполнен" || row.status === "отменён")
+    
+    if (row.status === "выполнен" || row.status === "отменён") {
       return res.status(400).json({
         success: false,
-        error: { code: "IMMUTABLE", message: "Нельзя редактировать завершённый проект" },
+        error: { code: "IMMUTABLE", message: "Нельзя редактировать завершённый проект" }
       });
+    }
 
-   
     if (newFilePath && row.photo_url) {
       const oldPath = "/app" + row.photo_url;
-      try { fs.unlinkSync(oldPath); } catch {}
+      try {
+        fs.unlinkSync(oldPath);
+      } catch {}
     }
 
     const finalPhoto = newFilePath || row.photo_url || null;
@@ -193,56 +201,49 @@ export const updateProject = async (req, res) => {
       total ?? null,
       status ?? null,
       finalPhoto,
-      id,
+      id
     ];
 
     const result = await pool.query(upd, params);
 
     res.json({ success: true, data: result.rows[0] });
-
   } catch (error) {
     console.error("Ошибка при обновлении проекта:", error);
     res.status(500).json({
       success: false,
-      error: { code: "ORDER_UPDATE_FAILED", message: "Ошибка при обновлении проекта" },
+      error: { code: "ORDER_UPDATE_FAILED", message: "Ошибка при обновлении проекта" }
     });
   }
 };
 
-
-
 export const cancelProject = async (req, res) => {
   try {
+    const user = req.user;
+    if (!isEngineer(user)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "Недостаточно прав" }
+      });
+    }
+
     const { id } = req.params;
 
-   
     const cur = await pool.query("SELECT * FROM projects WHERE id = $1", [id]);
 
     if (cur.rowCount === 0) {
       return res.status(404).json({
         success: false,
-        error: { code: "NOT_FOUND", message: "Проект не найден" },
+        error: { code: "NOT_FOUND", message: "Проект не найден" }
       });
     }
 
     const row = cur.rows[0];
 
-  
-    if (!canAccess(req.user, row)) {
-      return res.status(403).json({
-        success: false,
-        error: { code: "FORBIDDEN", message: "Недостаточно прав" },
-      });
-    }
-
-   
     if (row.photo_url) {
-      const filePath = "/app" + row.photo_url; 
+      const filePath = "/app" + row.photo_url;
       try {
         fs.unlinkSync(filePath);
-      } catch (e) {
-        console.warn("Не удалось удалить файл:", filePath);
-      }
+      } catch {}
     }
 
     const result = await pool.query(
@@ -255,10 +256,7 @@ export const cancelProject = async (req, res) => {
     console.error("Ошибка при удалении проекта:", error);
     res.status(500).json({
       success: false,
-      error: {
-        code: "ORDER_DELETE_FAILED",
-        message: "Ошибка при удалении проекта",
-      },
+      error: { code: "ORDER_DELETE_FAILED", message: "Ошибка при удалении проекта" }
     });
   }
 };

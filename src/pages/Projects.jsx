@@ -19,6 +19,21 @@ export default function Projects() {
   const [showForm, setShowForm] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  
+  let user = {};
+  try {
+    const raw = localStorage.getItem("user");
+    user = raw && raw !== "undefined" ? JSON.parse(raw) : {};
+  } catch {
+    user = {};
+  }
+
+  const role = user?.role || ""; 
+
+  const canEdit = role === "engineer";
+  const canCreate = role === "engineer";
+  const canDelete = role === "engineer";
+
   const loadProjects = () => {
     setLoading(true);
     api
@@ -28,10 +43,7 @@ export default function Projects() {
         setProjects(data);
         setFilteredProjects(data);
       })
-      .catch((err) => {
-        console.error(err);
-        setError("Ошибка загрузки проектов");
-      })
+      .catch(() => setError("Ошибка загрузки проектов"))
       .finally(() => setLoading(false));
   };
 
@@ -43,10 +55,12 @@ export default function Projects() {
     setSelectedProject(null);
     setShowForm(false);
     loadProjects();
-    setSearchReset((v) => v + 1); 
+    setSearchReset((v) => v + 1);
   };
 
   const handleDelete = async (id) => {
+    if (!canDelete) return alert("Недостаточно прав");
+
     if (!window.confirm("Удалить проект?")) return;
 
     try {
@@ -59,11 +73,12 @@ export default function Projects() {
   };
 
   const handleEdit = (id) => {
+    if (!canEdit) return alert("Недостаточно прав");
+
     const project = projects.find((p) => p.id === id);
     setSelectedProject(project);
     setShowForm(true);
   };
-
 
   const handleSearch = (query) => {
     if (!query) {
@@ -76,11 +91,7 @@ export default function Projects() {
     const filtered = projects.filter((p) => {
       const name = p.name?.toLowerCase() || "";
       const status = p.status?.toLowerCase() || "";
-
-      return (
-        name.includes(lower) ||
-        status.includes(lower)
-      );
+      return name.includes(lower) || status.includes(lower);
     });
 
     setFilteredProjects(filtered);
@@ -94,24 +105,24 @@ export default function Projects() {
         <div className="projects-header">
           <h1 className="hpage">Проекты</h1>
 
-          <SearchBar
-            onSearch={handleSearch}
-            resetTrigger={searchReset}
-          />
+          <SearchBar onSearch={handleSearch} resetTrigger={searchReset} />
         </div>
 
-        <button
-          className="adminbutton"
-          onClick={() => {
-            setSelectedProject(null);
-            setShowForm((v) => !v);
-          }}
-          style={{ marginBottom: 12 }}
-        >
-          {showForm ? "Закрыть форму" : "Добавить проект"}
-        </button>
+    
+        {canCreate && (
+          <button
+            className="adminbutton"
+            onClick={() => {
+              setSelectedProject(null);
+              setShowForm((v) => !v);
+            }}
+            style={{ marginBottom: 12 }}
+          >
+            {showForm ? "Закрыть форму" : "Добавить проект"}
+          </button>
+        )}
 
-        {showForm && (
+        {showForm && canCreate && (
           <ModalWrapper onClose={() => setShowForm(false)}>
             <AddProjectForm
               onCreated={handleCreated}
@@ -139,8 +150,8 @@ export default function Projects() {
                       : "/images/stroyka.jpg"
                   }
                   pathto="projects"
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onEdit={canEdit ? handleEdit : null}
+                  onDelete={canDelete ? handleDelete : null}
                 />
               ))
             ) : (

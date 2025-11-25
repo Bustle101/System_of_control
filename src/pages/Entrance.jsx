@@ -21,8 +21,11 @@ export default function Entrance() {
     try {
       const res = await api.post("/auth/login", { username, password });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      const token = res.data.data.token;
+      const user = res.data.data.user;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       setMessage("Вход выполнен успешно!");
 
@@ -31,6 +34,7 @@ export default function Entrance() {
       console.error("Ошибка при входе:", error);
       setMessage(error.response?.data?.message || "Неверный логин или пароль");
     }
+
   };
 
   return (

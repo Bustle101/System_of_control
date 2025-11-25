@@ -1,0 +1,10 @@
+{
+  "name": "systemcontrol-backend",
+  "private": true,
+  "scripts": {
+    "test:users": "cd service_users && npm test",
+    "test:orders": "cd service_orders && npm test",
+    "test:gateway": "cd api_gateway && npm test",
+    "test": "npm run test:users && npm run test:orders && npm run test:gateway"
+  }
+}

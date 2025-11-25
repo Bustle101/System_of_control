@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: "./server/.env" });
 
-// Настройка транспорта почты
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Запрос на сброс пароля
+
 export const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
@@ -57,7 +57,7 @@ export const requestPasswordReset = async (req, res) => {
   }
 };
 
-// Установка нового пароля по токену
+
 export const resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;

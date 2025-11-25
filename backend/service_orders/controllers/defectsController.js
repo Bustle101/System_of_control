@@ -107,7 +107,7 @@ export const createDefect = async (req, res) => {
         assigned_to_id || null,
         due_date || null,
         photo_url,
-        status || "новый"
+        "новый"
       ]
     );
 
@@ -126,7 +126,7 @@ export const updateDefect = async (req, res) => {
   try {
     const { id } = req.params;
 
-
+    
     const oldDef = await pool.query("SELECT * FROM defects WHERE id = $1", [id]);
     if (oldDef.rowCount === 0) {
       return res.status(404).json({
@@ -146,7 +146,17 @@ export const updateDefect = async (req, res) => {
       status
     } = req.body;
 
-  
+    
+    let normalizedDueDate = undefined;
+
+    if (due_date === "" || due_date === null) {
+      normalizedDueDate = null;
+    } else if (due_date) {
+      const d = new Date(due_date);
+      normalizedDueDate = isNaN(d.getTime()) ? null : d.toISOString();
+    }
+
+    
     let newPhoto = oldData.photo_url;
 
     if (req.file) {
@@ -166,14 +176,14 @@ export const updateDefect = async (req, res) => {
     const result = await pool.query(
       `UPDATE defects
        SET
-        title = COALESCE($1, title),
-        description = COALESCE($2, description),
-        priority = COALESCE($3, priority),
+        title          = COALESCE($1, title),
+        description    = COALESCE($2, description),
+        priority       = COALESCE($3::text, priority),
         assigned_to_id = COALESCE($4, assigned_to_id),
-        due_date = COALESCE($5, due_date),
-        photo_url = $6,
-        status = COALESCE($7, status),
-        updated_at = NOW()
+        due_date       = COALESCE($5, due_date),
+        photo_url      = $6,
+        status         = COALESCE($7, status),
+        updated_at     = NOW()
        WHERE id = $8
        RETURNING *`,
       [
@@ -181,7 +191,7 @@ export const updateDefect = async (req, res) => {
         description,
         priority,
         assigned_to_id,
-        due_date,
+        normalizedDueDate, 
         newPhoto,
         status,
         id
@@ -190,7 +200,7 @@ export const updateDefect = async (req, res) => {
 
     const updatedDefect = result.rows[0];
 
-
+   
     const changes = [];
 
     if (title && title !== oldData.title)
@@ -205,15 +215,17 @@ export const updateDefect = async (req, res) => {
     if (assigned_to_id && assigned_to_id !== oldData.assigned_to_id)
       changes.push(`Исполнитель: "${oldData.assigned_to_id}" → "${assigned_to_id}"`);
 
-    if (due_date && due_date !== oldData.due_date?.toISOString())
-      changes.push(`Крайний срок изменён`);
+    if (typeof due_date !== "undefined") {
+      const oldDueIso = oldData.due_date ? oldData.due_date.toISOString() : null;
+      if (normalizedDueDate !== oldDueIso)
+        changes.push(`Крайний срок изменён`);
+    }
 
     if (status && status !== oldData.status)
       changes.push(`Статус: "${oldData.status}" → "${status}"`);
 
     if (req.file)
       changes.push(`Фото обновлено`);
-
 
     if (changes.length > 0) {
       await pool.query(
@@ -226,7 +238,6 @@ export const updateDefect = async (req, res) => {
         ]
       );
     }
-
 
     res.json({ success: true, data: updatedDefect });
 
@@ -241,6 +252,7 @@ export const updateDefect = async (req, res) => {
     });
   }
 };
+
 
 
 export const deleteDefect = async (req, res) => {

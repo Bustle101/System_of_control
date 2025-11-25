@@ -4,7 +4,7 @@ import Header from "../components/Header/Header";
 
 
 export default function ReportDetail() {
-  const { id } = useParams(); // достаём ID проекта из адреса
+  const { id } = useParams(); 
   return (
     <div className="basa">
         <Header></Header>

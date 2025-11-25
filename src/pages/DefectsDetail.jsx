@@ -10,14 +10,12 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function formatISODate(isoString) {
   if (!isoString) return null;
-
   const date = new Date(isoString);
   if (isNaN(date.getTime())) return isoString;
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-
   return `${day}.${month}.${year}`;
 }
 
@@ -31,11 +29,23 @@ export default function DefectsDetail() {
   const [error, setError] = useState(null);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState(defect?.status || "");
-  const statuses = ["новая", "в работе", "на проверке", "закрыта", "отменена"];
+  const [newStatus, setNewStatus] = useState("");
   const [history, setHistory] = useState([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
+  const statuses = ["новая", "в работе", "на проверке", "закрыта", "отменена"];
+
+  
+  let user = {};
+  try {
+    const raw = localStorage.getItem("user");
+    user = raw && raw !== "undefined" ? JSON.parse(raw) : {};
+  } catch {
+    user = {};
+  }
+
+  const role = user.role;              
+  const canChangeStatus = role === "manager";
 
   useEffect(() => {
     loadDefect();
@@ -46,18 +56,18 @@ export default function DefectsDetail() {
       const res = await api.get(`/orders/defects/${id}`);
       const d = res.data.data;
       setDefect(d);
-      loadHistory();
 
+      setNewStatus(d.status);
+      loadHistory();
 
       if (d.project_id) loadProject(d.project_id);
       if (d.assigned_to_id) loadEngineer(d.assigned_to_id);
 
       loadComments();
-    } catch (err) {
+    } catch {
       setError("Не удалось загрузить дефект");
     }
   };
-
 
   const loadProject = async (projectId) => {
     try {
@@ -84,22 +94,6 @@ export default function DefectsDetail() {
     setIsCommentsLoading(false);
   };
 
-  const getImageSrc = () => {
-    if (!project?.photo_url) return null;
-    if (project.photo_url.startsWith("http")) return project.photo_url;
-    return `${API_URL}${project.photo_url}`;
-  };
-
-  const updateStatus = async () => {
-    try {
-      await api.put(`/orders/defects/${id}`, { status: newStatus });
-      setIsStatusModalOpen(false);
-      loadDefect(); 
-    } catch (err) {
-      alert("Ошибка при обновлении статуса");
-    }
-  };
-
   const loadHistory = async () => {
     setIsHistoryLoading(true);
     try {
@@ -111,6 +105,24 @@ export default function DefectsDetail() {
     setIsHistoryLoading(false);
   };
 
+  const getImageSrc = () => {
+    if (!project?.photo_url) return null;
+    return project.photo_url.startsWith("http")
+      ? project.photo_url
+      : `${API_URL}${project.photo_url}`;
+  };
+
+  const updateStatus = async () => {
+    if (!canChangeStatus) return alert("Недостаточно прав!");
+
+    try {
+      await api.put(`/orders/defects/${id}`, { status: newStatus });
+      setIsStatusModalOpen(false);
+      loadDefect();
+    } catch {
+      alert("Ошибка при обновлении статуса");
+    }
+  };
 
   if (error) return <p>{error}</p>;
   if (!defect) return <p>Загрузка...</p>;
@@ -118,17 +130,18 @@ export default function DefectsDetail() {
   return (
     <div className="container">
       <Header />
-      {isStatusModalOpen && (
+
+     
+      {isStatusModalOpen && canChangeStatus && (
         <div className="modal-overlay">
           <div className="modal-window">
             <h3>Изменить статус</h3>
 
-            <select
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-            >
+            <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
               {statuses.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
 
@@ -139,7 +152,6 @@ export default function DefectsDetail() {
           </div>
         </div>
       )}
-
 
       <main className="detail-page">
         <Link to="/defects" className="detail-back">← Назад</Link>
@@ -152,18 +164,17 @@ export default function DefectsDetail() {
         </div>
 
         <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">Проект:</span>
-              <span>{project ? project.name : "Загрузка..."}</span>
-            </div>
+          <div className="detail-item">
+            <span className="detail-label">Проект:</span>
+            <span>{project ? project.name : "Загрузка..."}</span>
+          </div>
 
-            <div className="detail-item">
-              <span className="detail-label">Статус:</span>
+          <div className="detail-item">
+            <span className="detail-label">Статус:</span>
 
-              <span className={`status status-${defect.status}`}>
-                {defect.status}
-              </span>
+            <span className={`status status-${defect.status}`}>{defect.status}</span>
 
+            {canChangeStatus && (
               <button
                 className="status-edit-btn"
                 onClick={() => {
@@ -173,8 +184,8 @@ export default function DefectsDetail() {
               >
                 Изменить
               </button>
-            </div>
-
+            )}
+          </div>
 
           <div className="detail-item">
             <span className="detail-label">Приоритет:</span>
@@ -206,6 +217,7 @@ export default function DefectsDetail() {
           {new Date(defect.created_at).toLocaleString("ru-RU")}
         </p>
 
+    
         <h2 className="detail-comments-title">История изменений</h2>
 
         <div className="comments-box">
@@ -218,28 +230,23 @@ export default function DefectsDetail() {
               <div key={item.id} className="comment">
                 <div className="comment-header">
                   <span className="comment-author">
-                    {item.username ? item.username : "Система"}
+                    {item.username || "Система"}
                   </span>
                   <span className="comment-date">
                     {new Date(item.created_at).toLocaleString("ru-RU")}
                   </span>
                 </div>
-
                 <div className="comment-text">{item.action}</div>
               </div>
             ))
           )}
         </div>
 
-
+       
         <h2 className="detail-comments-title">Комментарии</h2>
 
         <div className="comments-box">
-          {isCommentsLoading ? (
-            <p>Загрузка...</p>
-          ) : (
-            <CommentList comments={comments} />
-          )}
+          {isCommentsLoading ? <p>Загрузка...</p> : <CommentList comments={comments} />}
         </div>
 
         <CommentForm defectId={id} onAdded={loadComments} />
