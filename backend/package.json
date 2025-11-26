@@ -6,5 +6,9 @@
     "test:orders": "cd service_orders && npm test",
     "test:gateway": "cd api_gateway && npm test",
     "test": "npm run test:users && npm run test:orders && npm run test:gateway"
+  },
+  "dependencies": {
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

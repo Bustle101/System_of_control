@@ -5,6 +5,9 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import yaml from "yamljs";
+
 
 dotenv.config();
 
@@ -12,6 +15,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_TEST = process.env.NODE_ENV === "test";
 
+const swaggerDocument = yaml.load("./docs/openapi.yaml");
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(
   cors({
@@ -34,6 +39,7 @@ app.get("/", (req, res) => {
 
 const verifyToken = (req, res, next) => {
   const publicPaths = [
+    "/docs",
     "/api/auth/login",
     "/api/auth/register",
     "/api/password/forgot",

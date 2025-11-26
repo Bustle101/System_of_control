@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  title: Service Users API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3001/api
+    description: Local
+
+tags:
+  - name: Auth
+    description: Авторизация и регистрация
+  - name: Users
+    description: Управление пользователями
+
+paths:
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: Пользователь успешно зарегистрирован
+        "400":
+          description: Ошибка валидации
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Авторизация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Успешный вход
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Получение данных текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Данные пользователя
+        "401":
+          description: Не авторизован
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Получить список всех пользователей
+      responses:
+        "200":
+          description: Список пользователей
+
+  /users/engineers:
+    get:
+      tags: [Users]
+      summary: Получить список инженеров
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список инженеров
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Получить пользователя по ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Данные пользователя
+
+    put:
+      tags: [Users]
+      summary: Обновить имя пользователя
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        "200":
+          description: Имя обновлено
+
+    delete:
+      tags: [Users]
+      summary: Удалить пользователя
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Пользователь удален
+
+  /users/{id}/password:
+    put:
+      tags: [Users]
+      summary: Изменение пароля
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Пароль обновлён
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

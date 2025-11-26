@@ -1,0 +1,277 @@
+openapi: 3.0.0
+info:
+  title: Service Orders API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3002/api
+    description: Local
+
+tags:
+  - name: Defects
+    description: Работа с дефектами
+  - name: Comments
+    description: Комментарии к дефектам
+  - name: Projects
+    description: Управление проектами
+
+security:
+  - bearerAuth: []
+
+paths:
+
+
+
+  /orders/defects:
+    get:
+      tags: [Defects]
+      summary: Получить список всех дефектов
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список дефектов
+
+    post:
+      tags: [Defects]
+      summary: Создать новый дефект
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                assigned_to_id:
+                  type: string
+                due_date:
+                  type: string
+                  format: date
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Дефект создан
+
+  /orders/defects/{id}:
+    get:
+      tags: [Defects]
+      summary: Получить дефект по ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Данные дефекта
+
+    put:
+      tags: [Defects]
+      summary: Обновить дефект
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                assigned_to_id:
+                  type: string
+                due_date:
+                  type: string
+                status:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Дефект обновлён
+
+    delete:
+      tags: [Defects]
+      summary: Удалить дефект
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Дефект удалён
+
+  /orders/defects/{id}/history:
+    get:
+      tags: [Defects]
+      summary: История изменений дефекта
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: История изменений
+
+
+
+  /orders/defects/comments/{defect_id}:
+    get:
+      tags: [Comments]
+      summary: Получить комментарии к дефекту
+      parameters:
+        - in: path
+          name: defect_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Список комментариев
+
+    post:
+      tags: [Comments]
+      summary: Добавить комментарий
+      parameters:
+        - in: path
+          name: defect_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [comment]
+              properties:
+                comment:
+                  type: string
+      responses:
+        "201":
+          description: Комментарий добавлен
+
+
+
+  /orders/projects:
+    get:
+      tags: [Projects]
+      summary: Получить список проектов
+      responses:
+        "200":
+          description: Список проектов
+
+    post:
+      tags: [Projects]
+      summary: Создать проект
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                items:
+                  type: string
+                  description: JSON список элементов
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Проект создан
+
+  /orders/projects/{id}:
+    get:
+      tags: [Projects]
+      summary: Получить проект по ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Данные проекта
+
+    put:
+      tags: [Projects]
+      summary: Обновить проект
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                items:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Проект обновлён
+
+    delete:
+      tags: [Projects]
+      summary: Отменить проект
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Проект отменён
+
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

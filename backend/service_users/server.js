@@ -3,13 +3,18 @@ import cors from "cors";
 import userRoutes from "./routes/users.js";
 import passwordRoutes from "./routes/password.js";
 import authRoutes from "./routes/auth.js";
-
+import swaggerUi from "swagger-ui-express";
+import yaml from "yamljs"; 
 
 const app = express();
 const PORT = process.env.PORT || 3001; 
 
 app.use(cors());
 app.use(express.json());
+
+
+const swaggerDocument = yaml.load("./docs/openapi.yaml"); 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

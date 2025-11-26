@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: API Gateway — SystemControl
+  version: 1.0.0
+  description: >
+    API Gateway маршрутизирует запросы между сервисами пользователей и заказов.
+   
+
+servers:
+  - url: http://localhost:3000
+    description: Gateway Local
+
+tags:
+  - name: Gateway
+    description: Описание маршрутов API Gateway
+
+paths:
+
+  /api/auth:
+    post:
+      tags: [Gateway]
+      summary: Проксирование запросов авторизации в сервис пользователей
+      description: |
+        Доступно: /login, /register  
+        Маршрут передаётся в service_users.
+      responses:
+        "200":
+          description: Ответ сервисов авторизации
+
+  /api/users:
+    get:
+      tags: [Gateway]
+      summary: Проксирование вызовов управления пользователями
+      description: |
+        Передает запросы в service_users:  
+        - /api/users  
+        - /api/users/:id  
+        - /api/users/:id/password  
+        - /api/users/engineers
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Успешный ответ
+
+  /api/orders:
+    get:
+      tags: [Gateway]
+      summary: Проксирование запросов в сервис заказов (defects, projects, comments)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Ответ от service_orders
+
+    post:
+      tags: [Gateway]
+      summary: Создание записи (проксируется в service_orders)
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Создано
+
+  /uploads/{file}:
+    get:
+      tags: [Gateway]
+      summary: Доступ к загруженным файлам из service_orders
+      parameters:
+        - name: file
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Файл найден
+        "404":
+          description: Не найден
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
